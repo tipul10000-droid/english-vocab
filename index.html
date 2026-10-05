@@ -57,8 +57,9 @@ main{max-width:560px;margin:0 auto;padding:14px}
 <div id="ls"></div>
 </main>
 <script>
-// שורה: אנגלית|רמז|סוג|תרגום|קושי(1-3). שורה "#N" פותחת בלוק N (לפניה: בלוק 1)
-const RAW=`a little bit||x|קצת|1
+// שורה: אנגלית|רמז|סוג|תרגום|קושי(1-3). שורה "#N" פותחת בלוק N
+const RAW=`#2
+a little bit||x|קצת|1
 a pity||x|חבל|1
 a shame||x|בושה, חבל|1
 a variety of sth/sb||x|מגוון של|2
@@ -1064,7 +1065,7 @@ you know||x|אתה יודע|1
 your big brother / sister||x|אחיך / אחותך הגדול/ה|1
 yourself||pron|עצמך|1
 yourselves||pron|עצמכם|1
-#2
+#1
 a good/great deal||x|הרבה, כמות גדולה|2
 a sense of humor||x|חוש הומור|1
 ability||n|יכולת|2
@@ -2061,8 +2062,8 @@ youth|young person; young people; time when people are young|n|נוער, נעו�
 zone||n|אזור|1`;
 let bk=1;const WM=new Map();
 for(const l of RAW.trim().split('\n')){if(l[0]==='#'){bk=+l.slice(1);continue}const[e,h,p,t,d]=l.split('|'),w={k:e+'|'+h,e,h,p,t,d:+d,b:bk},o=WM.get(w.k);
- if(o)w.b=o.b;WM.set(w.k,w)} // מילה כפולה: הנתונים מהמופע האחרון, הבלוק מהמופע הראשון
-const W=[...WM.values()],BS=[...new Set(W.map(w=>w.b))];
+ if(o)w.b=Math.min(o.b,w.b);WM.set(w.k,w)} // מילה כפולה: הנתונים מהמופע האחרון, הבלוק הנמוך מבין השניים
+const W=[...WM.values()],BS=[...new Set(W.map(w=>w.b))].sort((a,b)=>a-b);
 const K=Object.fromEntries(W.map(w=>[w.k,w]));
 // בלוק נבחר נשמר במפתח נפרד (vq1blk): 0=כל הבלוקים, אחרת רק מילים מהבלוק הזה
 let BK=0;try{const v=+localStorage.getItem('vq1blk');if(BS.includes(v))BK=v}catch(e){}
