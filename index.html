@@ -22,6 +22,7 @@ main{max-width:560px;margin:0 auto;padding:14px}
 .sk{display:flex;gap:8px;justify-content:center;font-size:14px;margin:-6px 0 10px}.sk span{background:var(--card);border:1px solid var(--bd);border-radius:20px;padding:3px 12px}
 .sk .hot{border-color:#f08c00}
 .lv{display:flex;gap:6px;margin:0 0 12px}.lv button{flex:1;padding:7px 4px;font:inherit;font-size:14px;color:inherit;background:var(--card);border:1px solid var(--bd);border-radius:10px;cursor:pointer}
+.lv small{display:block;font-size:12px;opacity:.75}
 .lv button.on{background:var(--ac);border-color:var(--ac);color:#fff}
 .cr{display:flex;align-items:center;gap:10px;margin-bottom:12px}
 #gob{width:72px;height:72px;flex:none;transform-origin:50% 100%}
@@ -36,6 +37,7 @@ main{max-width:560px;margin:0 auto;padding:14px}
 <div class="bar"><i id="pb"></i></div>
 <div class="st"><span id="s1"></span><span id="s2"></span></div>
 <div class="sk"><span id="sc"></span><span id="sb"></span></div>
+<div class="lv" id="bk"></div>
 <div class="lv" id="lv"><button data-l="1">קל</button><button data-l="2">בינוני</button><button data-l="3">קשה</button><button data-l="0">הכל מהכל</button></div>
 <div class="cr">
 <svg id="gob" viewBox="0 0 80 80" aria-hidden="true">
@@ -55,7 +57,7 @@ main{max-width:560px;margin:0 auto;padding:14px}
 <div id="ls"></div>
 </main>
 <script>
-// שורה: אנגלית|רמז|סוג|תרגום|קושי(1-3)
+// שורה: אנגלית|רמז|סוג|תרגום|קושי(1-3). שורה "#N" פותחת בלוק N (לפניה: בלוק 1)
 const RAW=`a little bit||x|קצת|1
 a pity||x|חבל|1
 a shame||x|בושה, חבל|1
@@ -1062,6 +1064,7 @@ you know||x|אתה יודע|1
 your big brother / sister||x|אחיך / אחותך הגדול/ה|1
 yourself||pron|עצמך|1
 yourselves||pron|עצמכם|1
+#2
 a good/great deal||x|הרבה, כמות גדולה|2
 a sense of humor||x|חוש הומור|1
 ability||n|יכולת|2
@@ -2056,8 +2059,14 @@ written||adj|כתוב|1
 yet|used to connect words/phrases/clauses when second part adds something surprising to first part|conj|ובכל זאת|2
 youth|young person; young people; time when people are young|n|נוער, נעורים|2
 zone||n|אזור|1`;
-const W=[...new Map(RAW.trim().split('\n').map(l=>{const[e,h,p,t,d]=l.split('|');return{k:e+'|'+h,e,h,p,t,d:+d}}).map(w=>[w.k,w])).values()];
+let bk=1;const WM=new Map();
+for(const l of RAW.trim().split('\n')){if(l[0]==='#'){bk=+l.slice(1);continue}const[e,h,p,t,d]=l.split('|'),w={k:e+'|'+h,e,h,p,t,d:+d,b:bk},o=WM.get(w.k);
+ if(o)w.b=o.b;WM.set(w.k,w)} // מילה כפולה: הנתונים מהמופע האחרון, הבלוק מהמופע הראשון
+const W=[...WM.values()],BS=[...new Set(W.map(w=>w.b))];
 const K=Object.fromEntries(W.map(w=>[w.k,w]));
+// בלוק נבחר נשמר במפתח נפרד (vq1blk): 0=כל הבלוקים, אחרת רק מילים מהבלוק הזה
+let BK=0;try{const v=+localStorage.getItem('vq1blk');if(BS.includes(v))BK=v}catch(e){}
+const inB=k=>K[k]&&(!BK||K[k].b===BK);
 let S={n:0,L:[],P:{}},cur,opts,lock=false,ord=[],pm=null;
 try{const s=JSON.parse(localStorage.getItem('vq1'));if(s)S=s}catch(e){}
 const $=i=>document.getElementById(i);
@@ -2078,15 +2087,15 @@ let base=R.c<R.b?R.b:-1; // השיא כפי שהיה בתחילת הרצף הנ�
 function onStreak(ok){if(ok){if(!R.c)base=R.b;R.c++;const nb=base>0&&R.c===base+1;if(R.c>R.b)R.b=R.c;saveR();streak();
   if(MILE[R.c])gob(MILE[R.c],'party');else if(nb)gob('שיא חדש! 🎉','party');else gob(pick(YAY),'hop')}
  else{const lost=R.c;R.c=0;saveR();streak();gob(lost>=3?'רצף של '+lost+' נגמר 😭 בוא נתחיל חדש!':pick(OOPS),'sad','sad')}}
-function stats(){const l=S.L.filter(k=>K[k]).length,p=Object.keys(S.P).filter(k=>K[k]).length;
- $('pb').style.width=(100*l/W.length)+'%';$('s1').textContent='נלמדו: '+l+' / '+W.length;$('s2').textContent='לחזרה: '+p;}
+function stats(){const l=S.L.filter(inB).length,p=Object.keys(S.P).filter(inB).length,n=W.filter(w=>inB(w.k)).length;
+ $('pb').style.width=(100*l/n)+'%';$('s1').textContent='נלמדו: '+l+' / '+n;bkUI();$('s2').textContent='לחזרה: '+p;}
 function next(){lock=false;$('nx').style.display='none';
  cur=null;if(pm){while(pm.length&&!S.P[pm[0].k])pm.shift();if(pm.length)cur=pm.shift();else pm=null}
- let id=null,m=1e9;if(!cur)for(const k in S.P)if(K[k]&&S.P[k][0]<=S.n&&S.P[k][0]<m){m=S.P[k][0];id=k}
+ let id=null,m=1e9;if(!cur)for(const k in S.P)if(inB(k)&&S.P[k][0]<=S.n&&S.P[k][0]<m){m=S.P[k][0];id=k}
  if(cur){}else if(id)cur=K[id];else{while(ord.length&&(S.L.includes(ord[0].k)||S.P[ord[0].k]))ord.shift();cur=ord.shift();
-  if(!cur){const ks=Object.keys(S.P).filter(k=>K[k]).sort((a,b)=>S.P[a][0]-S.P[b][0]);if(ks.length)cur=K[ks[0]]}}
+  if(!cur){const ks=Object.keys(S.P).filter(inB).sort((a,b)=>S.P[a][0]-S.P[b][0]);if(ks.length)cur=K[ks[0]]}}
  stats();
- if(!cur){$('w').textContent='כל הכבוד! 🎉';$('h').textContent='סיימת את כל המילים';$('os').innerHTML='';return}
+ if(!cur){$('w').textContent='כל הכבוד! 🎉';$('h').textContent=BK?'סיימת את כל המילים בבלוק '+BK:'סיימת את כל המילים';$('os').innerHTML='';return}
  const pool=W.filter(w=>w.k!==cur.k&&w.t!==cur.t),ds=[];
  for(const w of sh(pool.filter(w=>w.p===cur.p)).concat(sh(pool))){if(ds.length==3)break;if(!ds.some(x=>x.t===w.t))ds.push(w)}
  opts=sh([cur,...ds]);$('w').textContent=cur.e;$('h').textContent=cur.h?'('+cur.h+')':'';
@@ -2100,14 +2109,18 @@ function ans(i){if(lock||!cur)return;lock=true;const ok=opts[i].t===cur.t,k=cur.
 // רמת קושי נשמרת במפתח נפרד (vq1lvl): 0=הכל מהכל, 1-3=קודם מילים ברמה שנבחרה, אחר כך הרמות הקרובות
 let LV=0;try{const v=+localStorage.getItem('vq1lvl');if(v>=0&&v<=3)LV=v}catch(e){}
 function lvUI(){for(const b of $('lv').children)b.className=+b.dataset.l===LV?'on':''}
-function start(){const L=new Set(S.L);ord=sh(W.filter(w=>!L.has(w.k)&&!S.P[w.k]));if(LV)ord.sort((a,b)=>Math.abs(a.d-LV)-Math.abs(b.d-LV));pm=null;next()}
+function start(){const L=new Set(S.L);ord=sh(W.filter(w=>inB(w.k)&&!L.has(w.k)&&!S.P[w.k]));if(LV)ord.sort((a,b)=>Math.abs(a.d-LV)-Math.abs(b.d-LV));pm=null;next()}
 $('lv').onclick=e=>{const l=e.target.dataset&&e.target.dataset.l;if(l==null||+l===LV)return;LV=+l;try{localStorage.setItem('vq1lvl',LV)}catch(e){}lvUI();
  gob({1:'קל ונעים, בוא נתחמם 🙂',2:'בינוני! יאללה להזיע קצת 💪',3:'קשה?! אתה אמיץ 😱',0:'הכל מהכל! ערבוב מוחלט 🌀'}[LV],'hop');$('ls').style.display='none';start()};
 lvUI();
-function practice(){const ks=Object.keys(S.P).filter(k=>K[k]);if(!ks.length)return;pm=sh(ks.map(k=>K[k]));$('ls').style.display='none';scrollTo(0,0);next()}
+function bkUI(){const L=new Set(S.L),c=b=>{const ws=W.filter(w=>!b||w.b===b);return ws.filter(w=>L.has(w.k)).length+'/'+ws.length};
+ $('bk').innerHTML=[...BS,0].map(b=>'<button data-b="'+b+'" class="'+(b===BK?'on':'')+'">'+(b?'בלוק '+b:'כל הבלוקים')+'<small>'+c(b)+'</small></button>').join('')}
+$('bk').onclick=e=>{const t=e.target.closest('button');if(!t||+t.dataset.b===BK)return;BK=+t.dataset.b;try{localStorage.setItem('vq1blk',BK)}catch(e){}
+ gob(BK?'רק בלוק '+BK+'! מתמקדים 🎯':'כל הבלוקים! הכל פתוח 🌍','hop');$('ls').style.display='none';start()};
+function practice(){const ks=Object.keys(S.P).filter(inB);if(!ks.length)return;pm=sh(ks.map(k=>K[k]));$('ls').style.display='none';scrollTo(0,0);next()}
 $('nx').onclick=next;
 document.onkeydown=e=>{if(e.key>='1'&&e.key<='4'&&opts&&opts[e.key-1])ans(e.key-1);else if((e.key==='Enter'||e.key===' ')&&lock&&$('nx').style.display!=='none'){e.preventDefault();next()}};
-$('bl').onclick=()=>{const b=$('ls'),ks=Object.keys(S.P).filter(k=>K[k]);
+$('bl').onclick=()=>{const b=$('ls'),ks=Object.keys(S.P).filter(inB);
  b.innerHTML=(ks.length?'<button class="nx" id="pr" style="display:block;margin:8px auto">תרגל שוב את המילים האלה</button>':'')+(ks.length?ks.map(k=>'<div><b>'+K[k].e+'</b> — '+K[k].t+'</div>').join(''):'אין מילים כאלה כרגע 👍');if($('pr'))$('pr').onclick=practice;
  b.style.display=b.style.display==='block'?'none':'block'};
 let rc=0;$('br').onclick=()=>{if(!rc){rc=1;$('br').textContent='בטוח? לחץ שוב למחיקה';setTimeout(()=>{rc=0;$('br').textContent='איפוס'},4000);return}
