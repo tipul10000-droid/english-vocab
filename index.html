@@ -22,6 +22,14 @@ main{max-width:560px;margin:0 auto;padding:14px}
 .sk{display:flex;gap:8px;justify-content:center;font-size:14px;margin:-6px 0 10px}.sk span{background:var(--card);border:1px solid var(--bd);border-radius:20px;padding:3px 12px}
 .sk .hot{border-color:#f08c00}
 .lv{display:flex;gap:6px;margin:0 0 12px}.lv button{flex:1;padding:7px 4px;font:inherit;font-size:14px;color:inherit;background:var(--card);border:1px solid var(--bd);border-radius:10px;cursor:pointer}
+.sk button{font:inherit;font-size:14px;color:inherit;background:var(--card);border:1px solid var(--ac);border-radius:20px;padding:3px 12px;cursor:pointer}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:flex-start;justify-content:center;z-index:9;padding:calc(env(safe-area-inset-top,0px) + 12px) 12px 12px;overflow:auto}
+.ov.on{display:flex}#nm{z-index:10}.pn{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:14px;width:100%;max-width:520px;box-sizing:border-box}
+.pn h2{margin:0 0 10px;font-size:20px}.pn input{width:100%;box-sizing:border-box;font:inherit;padding:12px;border:2px solid var(--bd);border-radius:10px;background:var(--bg);color:inherit}
+.pn .row{display:flex;gap:8px;margin-top:10px}.pn .row button{flex:1;padding:10px;font:inherit;color:inherit;background:var(--card);border:1px solid var(--bd);border-radius:10px;cursor:pointer}
+.pn .row button.pri{background:var(--ac);border-color:var(--ac);color:#fff}.pn .note{font-size:13px;opacity:.7;margin-top:6px}
+.lr{display:flex;align-items:center;gap:8px;padding:8px 6px;border-bottom:1px solid var(--bd)}.lr.me{background:rgba(59,91,219,.14);border-radius:8px}
+.lr .rk{width:30px;text-align:center;font-weight:700}.lr .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lr .nu{display:flex;gap:10px;font-size:14px;opacity:.85}.lr .nu b{opacity:1}.lr .nu span{min-width:40px;text-align:center;opacity:.7}.lr .nu span.sel{opacity:1;font-weight:700}
 .lv small{display:block;font-size:12px;opacity:.75}
 .lv button.on{background:var(--ac);border-color:var(--ac);color:#fff}
 .cr{display:flex;align-items:center;gap:10px;margin-bottom:12px}
@@ -36,7 +44,7 @@ main{max-width:560px;margin:0 auto;padding:14px}
 </style></head><body><main>
 <div class="bar"><i id="pb"></i></div>
 <div class="st"><span id="s1"></span><span id="s2"></span></div>
-<div class="sk"><span id="sc"></span><span id="sb"></span></div>
+<div class="sk"><span id="sc"></span><span id="sb"></span><button id="lbb" style="display:none">🏆 דירוג</button></div>
 <div class="lv" id="bk"></div>
 <div class="lv" id="lv"><button data-l="1">קל</button><button data-l="2">בינוני</button><button data-l="3">קשה</button><button data-l="0">הכל מהכל</button></div>
 <div class="cr">
@@ -56,6 +64,8 @@ main{max-width:560px;margin:0 auto;padding:14px}
 <div class="ft"><button id="bl">מילים שטעיתי בהן</button><button id="br">איפוס</button></div>
 <div id="ls"></div>
 </main>
+<div class="ov" id="nm"><div class="pn"><h2>איך לקרוא לך? 👋</h2><input id="nmi" maxlength="20" autocomplete="off" placeholder="כינוי (בלי שם משפחה)"><div class="note">הכינוי יופיע בלוח הדירוג של כל מי שמשתמש באפליקציה. ההתקדמות שכבר צברת נשמרת ותופיע מיד.</div><div class="row"><button class="pri" id="nmo">שמור</button><button id="nmc">ביטול</button></div></div></div>
+<div class="ov" id="lbp"><div class="pn"><h2>🏆 לוח דירוג</h2><div class="lv" id="lbs"><button data-s="learned">📚 נלמדו</button><button data-s="streak">🔥 רצף</button><button data-s="best">🏆 שיא</button></div><div id="lbl"></div><div class="row"><button id="lbr">רענון</button><button id="lbn">החלף כינוי</button><button id="lbx">סגור</button></div></div></div>
 <script>
 // שורה: אנגלית|רמז|סוג|תרגום|קושי(1-3). שורה "#N" פותחת בלוק N
 const RAW=`#2
@@ -2089,7 +2099,7 @@ function onStreak(ok){if(ok){if(!R.c)base=R.b;R.c++;const nb=base>0&&R.c===base+
   if(MILE[R.c])gob(MILE[R.c],'party');else if(nb)gob('שיא חדש! 🎉','party');else gob(pick(YAY),'hop')}
  else{const lost=R.c;R.c=0;saveR();streak();gob(lost>=3?'רצף של '+lost+' נגמר 😭 בוא נתחיל חדש!':pick(OOPS),'sad','sad')}}
 function stats(){const l=S.L.filter(inB).length,p=Object.keys(S.P).filter(inB).length,n=W.filter(w=>inB(w.k)).length;
- $('pb').style.width=(100*l/n)+'%';$('s1').textContent='נלמדו: '+l+' / '+n;bkUI();$('s2').textContent='לחזרה: '+p;}
+ $('pb').style.width=(100*l/n)+'%';$('s1').textContent='נלמדו: '+l+' / '+n;bkUI();if(typeof lbQueue==='function')lbQueue();$('s2').textContent='לחזרה: '+p;}
 function next(){lock=false;$('nx').style.display='none';
  cur=null;if(pm){while(pm.length&&!S.P[pm[0].k])pm.shift();if(pm.length)cur=pm.shift();else pm=null}
  let id=null,m=1e9;if(!cur)for(const k in S.P)if(inB(k)&&S.P[k][0]<=S.n&&S.P[k][0]<m){m=S.P[k][0];id=k}
@@ -2120,12 +2130,45 @@ $('bk').onclick=e=>{const t=e.target.closest('button');if(!t||+t.dataset.b===BK)
  gob(BK?'רק בלוק '+BK+'! מתמקדים 🎯':'כל הבלוקים! הכל פתוח 🌍','hop');$('ls').style.display='none';start()};
 function practice(){const ks=Object.keys(S.P).filter(inB);if(!ks.length)return;pm=sh(ks.map(k=>K[k]));$('ls').style.display='none';scrollTo(0,0);next()}
 $('nx').onclick=next;
-document.onkeydown=e=>{if(e.key>='1'&&e.key<='4'&&opts&&opts[e.key-1])ans(e.key-1);else if((e.key==='Enter'||e.key===' ')&&lock&&$('nx').style.display!=='none'){e.preventDefault();next()}};
+document.onkeydown=e=>{if(e.target.tagName==='INPUT')return;if(e.key>='1'&&e.key<='4'&&opts&&opts[e.key-1])ans(e.key-1);else if((e.key==='Enter'||e.key===' ')&&lock&&$('nx').style.display!=='none'){e.preventDefault();next()}};
 $('bl').onclick=()=>{const b=$('ls'),ks=Object.keys(S.P).filter(inB);
  b.innerHTML=(ks.length?'<button class="nx" id="pr" style="display:block;margin:8px auto">תרגל שוב את המילים האלה</button>':'')+(ks.length?ks.map(k=>'<div><b>'+K[k].e+'</b> — '+K[k].t+'</div>').join(''):'אין מילים כאלה כרגע 👍');if($('pr'))$('pr').onclick=practice;
  b.style.display=b.style.display==='block'?'none':'block'};
 let rc=0;$('br').onclick=()=>{if(!rc){rc=1;$('br').textContent='בטוח? לחץ שוב למחיקה';setTimeout(()=>{rc=0;$('br').textContent='איפוס'},4000);return}
  rc=0;$('br').textContent='איפוס';S={n:0,L:[],P:{}};save();R.c=0;saveR();streak();gob('דף חדש! יאללה מההתחלה 🌱','hop');$('ls').style.display='none';start()};
+// ===== לוח דירוג (Supabase). זהות נשמרת במפתח נפרד vq1lb {id,token,name}; vq1 ו-vq1streak לא משתנים =====
+const SB_URL='https://emgtyfksnofzzlutngbf.supabase.co',SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVtZ3R5Zmtzbm9menpsdXRuZ2JmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyNDI0MTMsImV4cCI6MjEwNjgxODQxM30.b7XE-gbCUlXMqpza1Bn9GvMKQsmu3jKP2eqZ0r4-k2k';
+const rnd=n=>{const a=new Uint8Array(n);crypto.getRandomValues(a);return[...a].map(x=>x.toString(16).padStart(2,'0')).join('')};
+const uuid=()=>{const h=rnd(16).split('');h[12]='4';h[16]='89ab'[parseInt(h[16],16)&3];const j=h.join('');return j.slice(0,8)+'-'+j.slice(8,12)+'-'+j.slice(12,16)+'-'+j.slice(16,20)+'-'+j.slice(20)};
+let ME=null;try{const m=JSON.parse(localStorage.getItem('vq1lb'));if(m&&m.id&&m.token)ME=m}catch(e){}
+const saveME=()=>{try{localStorage.setItem('vq1lb',JSON.stringify(ME))}catch(e){}};
+const sbCall=(fn,body,keep)=>fetch(SB_URL+'/rest/v1/rpc/'+fn,{method:'POST',keepalive:!!keep,headers:{'Content-Type':'application/json',apikey:SB_KEY,Authorization:'Bearer '+SB_KEY},body:JSON.stringify(body)}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()});
+const lbStats=()=>({p_learned:S.L.filter(k=>K[k]).length,p_streak:R.c,p_best:R.b});
+let lbLast='',lbT=null;
+function lbSend(keep){if(!ME||!ME.name)return Promise.resolve();const st=lbStats(),sig=ME.name+'|'+st.p_learned+'|'+st.p_streak+'|'+st.p_best;if(sig===lbLast)return Promise.resolve();
+ return sbCall('vocab_lb_upsert',{p_id:ME.id,p_token:ME.token,p_name:ME.name,...st},keep).then(ok=>{if(ok)lbLast=sig}).catch(()=>{})}
+function lbQueue(){if(!ME||!ME.name)return;clearTimeout(lbT);lbT=setTimeout(()=>lbSend(false),1500)}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){clearTimeout(lbT);lbSend(true)}});
+const cleanName=v=>v.replace(/[\u0000-\u001f\u007f]/g,'').replace(/\s+/g,' ').trim().slice(0,20);
+let nmCancel=false;
+function askName(canCancel){nmCancel=canCancel;$('nmc').style.display=canCancel?'':'none';$('nmi').value=ME&&ME.name||'';$('nm').classList.add('on');setTimeout(()=>$('nmi').focus(),50)}
+function saveName(){const n=cleanName($('nmi').value);if(!n){$('nmi').focus();return}if(!ME)ME={id:uuid(),token:rnd(24),name:n};else ME.name=n;saveME();$('nm').classList.remove('on');lbLast='';lbSend(false).then(()=>{if($('lbp').classList.contains('on'))lbLoad()})}
+$('nmo').onclick=saveName;$('nmi').onkeydown=e=>{if(e.key==='Enter')saveName()};$('nmc').onclick=()=>{if(nmCancel)$('nm').classList.remove('on')};
+let lbSort='learned',lbRows=[];
+function lbDraw(){for(const b of $('lbs').children)b.className=b.dataset.s===lbSort?'on':'';
+ const rows=lbRows.slice().sort((a,b)=>b[lbSort]-a[lbSort]||b.learned-a.learned||b.best-a.best||b.streak-a.streak),box=$('lbl');box.textContent='';
+ if(!rows.length){box.textContent='עוד אין משתתפים. תהיה הראשון! 🚀';return}
+ rows.forEach((r,i)=>{const d=document.createElement('div');d.className='lr'+(ME&&r.id===ME.id?' me':'');
+  const rk=document.createElement('div');rk.className='rk';rk.textContent=['🥇','🥈','🥉'][i]||i+1;
+  const nm=document.createElement('div');nm.className='nm';nm.textContent=(ME&&r.id===ME.id?'⭐ ':'')+r.name;
+  const nu=document.createElement('div');nu.className='nu';
+  for(const [k,ic] of [['learned','📚'],['streak','🔥'],['best','🏆']]){const s=document.createElement('span');s.textContent=ic+' '+r[k];if(k===lbSort)s.className='sel';nu.appendChild(s)}
+  d.append(rk,nm,nu);box.appendChild(d)})}
+function lbLoad(){$('lbl').textContent='טוען...';lbSend(false).then(()=>sbCall('vocab_lb_get',{})).then(r=>{lbRows=r;lbDraw()}).catch(()=>{$('lbl').textContent='לא הצלחתי להתחבר. בדוק חיבור לאינטרנט ונסה שוב.'})}
+$('lbb').onclick=()=>{$('lbp').classList.add('on');scrollTo(0,0);lbLoad()};
+$('lbx').onclick=()=>$('lbp').classList.remove('on');$('lbr').onclick=lbLoad;$('lbn').onclick=()=>askName(true);
+$('lbs').onclick=e=>{const t=e.target.dataset&&e.target.dataset.s;if(t){lbSort=t;lbDraw()}};
+$('lbb').style.display='';if(!ME||!ME.name)setTimeout(()=>askName(false),700);else lbQueue();
 streak();gob(R.c>=3?'רצף של '+R.c+'! לא לשבור אותו 🔥':pick(['היי! אני גוֹשי. בוא נלמד מילים 👋','חזרת! התגעגעתי 🥹','מוכן? אני מוכן 🤪']),'hop');
 start();
 </script></body></html>
