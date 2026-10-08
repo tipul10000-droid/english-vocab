@@ -22,6 +22,7 @@ main{max-width:560px;margin:0 auto;padding:14px}
 .sk{display:flex;gap:8px;justify-content:center;font-size:14px;margin:-6px 0 10px}.sk span{background:var(--card);border:1px solid var(--bd);border-radius:20px;padding:3px 12px}
 .sk .hot{border-color:#f08c00}
 .lv{display:flex;gap:6px;margin:0 0 12px}.lv button{flex:1;padding:7px 4px;font:inherit;font-size:14px;color:inherit;background:var(--card);border:1px solid var(--bd);border-radius:10px;cursor:pointer}
+.pd{width:1.15em;height:1.15em;vertical-align:-.2em}
 .sk button{font:inherit;font-size:14px;color:inherit;background:var(--card);border:1px solid var(--ac);border-radius:20px;padding:3px 12px;cursor:pointer}
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:flex-start;justify-content:center;z-index:9;padding:calc(env(safe-area-inset-top,0px) + 12px) 12px 12px;overflow:auto}
 .ov.on{display:flex}#nm{z-index:10}.pn{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:14px;width:100%;max-width:520px;box-sizing:border-box}
@@ -44,7 +45,7 @@ main{max-width:560px;margin:0 auto;padding:14px}
 </style></head><body><main>
 <div class="bar"><i id="pb"></i></div>
 <div class="st"><span id="s1"></span><span id="s2"></span></div>
-<div class="sk"><span id="sc"></span><span id="sb"></span><button id="lbb" style="display:none">🏆 דירוג</button></div>
+<div class="sk"><span id="sc"></span><span id="sb"></span><button id="lbb" style="display:none"><svg class="pd" viewBox="0 0 24 24" aria-hidden="true"><rect x="1.5" y="12" width="6.5" height="10" rx="1.2" fill="#c3cad6" stroke="currentColor" stroke-width="1.3"/><rect x="8.8" y="5.5" width="6.5" height="16.5" rx="1.2" fill="#f5b301" stroke="currentColor" stroke-width="1.3"/><rect x="16" y="15" width="6.5" height="7" rx="1.2" fill="#cd7f32" stroke="currentColor" stroke-width="1.3"/><path d="M12 1.3l1 2 2.2.3-1.6 1.5.4 2.2-2-1.1-2 1.1.4-2.2L8.8 3.6 11 3.3z" fill="#f5b301" stroke="currentColor" stroke-width=".9" stroke-linejoin="round" transform="translate(0 -.4)"/></svg> דירוג</button></div>
 <div class="lv" id="bk"></div>
 <div class="lv" id="lv"><button data-l="1">קל</button><button data-l="2">בינוני</button><button data-l="3">קשה</button><button data-l="0">הכל מהכל</button></div>
 <div class="cr">
@@ -65,7 +66,7 @@ main{max-width:560px;margin:0 auto;padding:14px}
 <div id="ls"></div>
 </main>
 <div class="ov" id="nm"><div class="pn"><h2>איך לקרוא לך? 👋</h2><input id="nmi" maxlength="20" autocomplete="off" placeholder="כינוי (בלי שם משפחה)"><div class="note">הכינוי יופיע בלוח הדירוג של כל מי שמשתמש באפליקציה. ההתקדמות שכבר צברת נשמרת ותופיע מיד.</div><div class="row"><button class="pri" id="nmo">שמור</button><button id="nmc">ביטול</button></div></div></div>
-<div class="ov" id="lbp"><div class="pn"><h2>🏆 לוח דירוג</h2><div class="lv" id="lbs"><button data-s="learned">📚 נלמדו</button><button data-s="streak">🔥 רצף</button><button data-s="best">🏆 שיא</button></div><div id="lbl"></div><div class="row"><button id="lbr">רענון</button><button id="lbn">החלף כינוי</button><button id="lbx">סגור</button></div></div></div>
+<div class="ov" id="lbp"><div class="pn"><h2><svg class="pd" viewBox="0 0 24 24" aria-hidden="true"><rect x="1.5" y="12" width="6.5" height="10" rx="1.2" fill="#c3cad6" stroke="currentColor" stroke-width="1.3"/><rect x="8.8" y="5.5" width="6.5" height="16.5" rx="1.2" fill="#f5b301" stroke="currentColor" stroke-width="1.3"/><rect x="16" y="15" width="6.5" height="7" rx="1.2" fill="#cd7f32" stroke="currentColor" stroke-width="1.3"/><path d="M12 1.3l1 2 2.2.3-1.6 1.5.4 2.2-2-1.1-2 1.1.4-2.2L8.8 3.6 11 3.3z" fill="#f5b301" stroke="currentColor" stroke-width=".9" stroke-linejoin="round" transform="translate(0 -.4)"/></svg> לוח דירוג</h2><div class="lv" id="lbs"><button data-s="learned">📚 נלמדו</button><button data-s="streak">🔥 רצף</button><button data-s="best">🏆 שיא</button></div><div id="lbl"></div><div class="row"><button id="lbr">רענון</button><button id="lbn">החלף כינוי</button><button id="lbx">סגור</button></div></div></div>
 <script>
 // שורה: אנגלית|רמז|סוג|תרגום|קושי(1-3). שורה "#N" פותחת בלוק N
 const RAW=`#2
