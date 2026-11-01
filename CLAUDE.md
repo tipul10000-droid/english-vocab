@@ -1,3 +1,12 @@
+# english-vocab: עבר למאגר apps
+
+**האפליקציה עברה** ל-`tipul10000-droid/apps`, בתיקייה `study/`:
+https://tipul10000-droid.github.io/apps/study/
+כאן נשאר רק `index.html` שמפנה לכתובת החדשה. כל עבודה על האפליקציה נעשית במאגר apps (ראו CLAUDE.md שם). הפינג היומי ל-Supabase עבר גם הוא ל-apps.
+
+---
+התוכן למטה הוא ההיסטוריה מלפני המעבר.
+
 # english-vocab: לימוד אוצר מילים באנגלית
 
 אפליקציית לימוד מילים בעברית (RTL), בקובץ אחד: `index.html`. היא מתפרסמת ב-GitHub Pages מ-`main` (תיקיית root):
